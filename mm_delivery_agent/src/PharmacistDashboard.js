@@ -3,6 +3,10 @@ import React, { useState, useEffect } from 'react';
 function PharmacistDashboard() {
   const [patientName, setPatientName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [drugName, setDrugName] = useState('');
+  const [deliveryDate, setDeliveryDate] = useState('');
+  const [address, setAddress] = useState('');
+  const [notes, setNotes] = useState('');
   const [status, setStatus] = useState('');
   const [callData, setCallData] = useState([]);
 
@@ -12,13 +16,17 @@ function PharmacistDashboard() {
 
     try {
       const response = await fetch(
-        'https://<your-firebase-project>.cloudfunctions.net/api/send-call',
+        'https://hook.make.com/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // Your Make.com Webhook URL here
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            patientName,
-            phoneNumber,
+            patient_name: patientName,
+            phone_number: phoneNumber,
+            drug_name: drugName,
+            delivery_date: deliveryDate,
+            address: address,
+            notes: notes,
           }),
         }
       );
@@ -27,7 +35,11 @@ function PharmacistDashboard() {
         setStatus('Call sent successfully!');
         setPatientName('');
         setPhoneNumber('');
-        fetchCallData();
+        setDrugName('');
+        setDeliveryDate('');
+        setAddress('');
+        setNotes('');
+        fetchCallData(); // refresh call history
       } else {
         setStatus('Failed to send call.');
       }
@@ -40,10 +52,10 @@ function PharmacistDashboard() {
   const fetchCallData = async () => {
     try {
       const response = await fetch(
-        'https://<your-firebase-project>.cloudfunctions.net/api/calls'
+        'https://sheet.best/api/sheets/xxxxxxxxxxxxxxxxxxx' // Replace with your Google Sheet API URL (Sheet.best or similar)
       );
       const data = await response.json();
-      setCallData(data.calls || []);
+      setCallData(data);
     } catch (error) {
       console.error('Error fetching call data:', error);
     }
@@ -78,6 +90,44 @@ function PharmacistDashboard() {
           />
         </label>
 
+        <label>
+          Drug Name:
+          <input
+            type="text"
+            value={drugName}
+            onChange={(e) => setDrugName(e.target.value)}
+            required
+          />
+        </label>
+
+        <label>
+          Delivery Date:
+          <input
+            type="date"
+            value={deliveryDate}
+            onChange={(e) => setDeliveryDate(e.target.value)}
+            required
+          />
+        </label>
+
+        <label>
+          Address:
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            required
+          />
+        </label>
+
+        <label>
+          Notes:
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
+        </label>
+
         <button type="submit">Send Automated Call</button>
       </form>
 
@@ -87,24 +137,38 @@ function PharmacistDashboard() {
       <table border="1" cellPadding="8" style={{ width: '100%', textAlign: 'left' }}>
         <thead>
           <tr>
+            <th>Timestamp</th>
             <th>Patient Name</th>
             <th>Phone Number</th>
-            <th>Timestamp</th>
-            <th>Collected Data</th>
+            <th>Drug Name</th>
+            <th>Delivery Date</th>
+            <th>Address</th>
+            <th>Call Status</th>
+            <th>Home Confirmation</th>
+            <th>Treatment Change</th>
+            <th>Change Details</th>
+            <th>Notes</th>
           </tr>
         </thead>
         <tbody>
           {callData.length === 0 ? (
             <tr>
-              <td colSpan="4">No call data available.</td>
+              <td colSpan="11">No call data available.</td>
             </tr>
           ) : (
             callData.map((call, index) => (
               <tr key={index}>
-                <td>{call.patientName}</td>
-                <td>{call.phoneNumber}</td>
-                <td>{new Date(call.timestamp).toLocaleString()}</td>
-                <td>{JSON.stringify(call.collectedData)}</td>
+                <td>{call.time_stamp}</td>
+                <td>{call.patient_name}</td>
+                <td>{call.phone_number}</td>
+                <td>{call.drug_name}</td>
+                <td>{call.delivery_date}</td>
+                <td>{call.address}</td>
+                <td>{call.call_status}</td>
+                <td>{call.home_confirmation}</td>
+                <td>{call.treatment_change}</td>
+                <td>{call.change_details}</td>
+                <td>{call.notes}</td>
               </tr>
             ))
           )}

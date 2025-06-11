@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
 function PharmacistDashboard() {
+  const [patientId, setPatientId] = useState('');
   const [patientName, setPatientName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [drugName, setDrugName] = useState('');
-  const [deliveryDate, setDeliveryDate] = useState('');
-  const [address, setAddress] = useState('');
+  const [drugDIN, setDrugDIN] = useState('');
+  const [patientAddress, setPatientAddress] = useState('');
+  const [scheduledDeliveryDate, setScheduledDeliveryDate] = useState('');
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState('');
   const [callData, setCallData] = useState([]);
@@ -16,16 +18,18 @@ function PharmacistDashboard() {
 
     try {
       const response = await fetch(
-        'https://hook.make.com/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', // Your Make.com Webhook URL here
+        'https://hook.us2.make.com/whnf2g6rovuuw1f4tkt3uhn4q17jutdq', // Your Make.com Webhook URL here
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            patient_id: patientId,
             patient_name: patientName,
             phone_number: phoneNumber,
             drug_name: drugName,
-            delivery_date: deliveryDate,
-            address: address,
+            drug_DIN: drugDIN,
+            patient_address: patientAddress,
+            scheduled_date: scheduledDeliveryDate,
             notes: notes,
           }),
         }
@@ -33,11 +37,13 @@ function PharmacistDashboard() {
 
       if (response.ok) {
         setStatus('Call sent successfully!');
+        setPatientId('');
         setPatientName('');
         setPhoneNumber('');
         setDrugName('');
-        setDeliveryDate('');
-        setAddress('');
+        setDrugDIN('');
+        setPatientAddress('');
+        setScheduledDeliveryDate('');
         setNotes('');
         fetchCallData(); // refresh call history
       } else {
@@ -52,7 +58,7 @@ function PharmacistDashboard() {
   const fetchCallData = async () => {
     try {
       const response = await fetch(
-        'https://sheet.best/api/sheets/xxxxxxxxxxxxxxxxxxx' // Replace with your Google Sheet API URL (Sheet.best or similar)
+        'https://sheet.best/api/sheets/xxxxxxxxxxxxxxxxxxx' // Replace with your Google Sheet API URL
       );
       const data = await response.json();
       setCallData(data);
@@ -66,10 +72,20 @@ function PharmacistDashboard() {
   }, []);
 
   return (
-    <div className="PharmacistDashboard" style={{ padding: '2rem', maxWidth: '600px', margin: 'auto' }}>
+    <div className="PharmacistDashboard" style={{ padding: '2rem', maxWidth: '1000px', margin: 'auto' }}>
       <h1>Pharmacist Dashboard</h1>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+        <label>
+          Patient ID:
+          <input
+            type="text"
+            value={patientId}
+            onChange={(e) => setPatientId(e.target.value)}
+            required
+          />
+        </label>
+
         <label>
           Patient Name:
           <input
@@ -101,21 +117,31 @@ function PharmacistDashboard() {
         </label>
 
         <label>
-          Delivery Date:
+          Drug DIN:
           <input
-            type="date"
-            value={deliveryDate}
-            onChange={(e) => setDeliveryDate(e.target.value)}
+            type="text"
+            value={drugDIN}
+            onChange={(e) => setDrugDIN(e.target.value)}
             required
           />
         </label>
 
         <label>
-          Address:
+          Patient Address:
           <input
             type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            value={patientAddress}
+            onChange={(e) => setPatientAddress(e.target.value)}
+            required
+          />
+        </label>
+
+        <label>
+          Scheduled Delivery Date:
+          <input
+            type="date"
+            value={scheduledDeliveryDate}
+            onChange={(e) => setScheduledDeliveryDate(e.target.value)}
             required
           />
         </label>
@@ -137,38 +163,50 @@ function PharmacistDashboard() {
       <table border="1" cellPadding="8" style={{ width: '100%', textAlign: 'left' }}>
         <thead>
           <tr>
-            <th>Timestamp</th>
+            <th>Time Stamp</th>
+            <th>Call ID</th>
+            <th>Patient ID</th>
             <th>Patient Name</th>
             <th>Phone Number</th>
             <th>Drug Name</th>
-            <th>Delivery Date</th>
-            <th>Address</th>
+            <th>Drug DIN</th>
+            <th>Patient Address</th>
+            <th>Scheduled Delivery Date</th>
+            <th>Confirmed Delivery Date</th>
             <th>Call Status</th>
-            <th>Home Confirmation</th>
+            <th>Call Transcript</th>
+            <th>At Home Confirmation</th>
             <th>Treatment Change</th>
             <th>Change Details</th>
             <th>Notes</th>
+            <th>Delivery Instructions</th>
           </tr>
         </thead>
         <tbody>
           {callData.length === 0 ? (
             <tr>
-              <td colSpan="11">No call data available.</td>
+              <td colSpan="17">No call data available.</td>
             </tr>
           ) : (
             callData.map((call, index) => (
               <tr key={index}>
                 <td>{call.time_stamp}</td>
+                <td>{call.call_id}</td>
+                <td>{call.patient_id}</td>
                 <td>{call.patient_name}</td>
                 <td>{call.phone_number}</td>
                 <td>{call.drug_name}</td>
-                <td>{call.delivery_date}</td>
-                <td>{call.address}</td>
+                <td>{call.drug_DIN}</td>
+                <td>{call.patient_address}</td>
+                <td>{call.scheduled_delivery_date}</td>
+                <td>{call.confirmed_delivery_date}</td>
                 <td>{call.call_status}</td>
-                <td>{call.home_confirmation}</td>
+                <td>{call.call_transcript}</td>
+                <td>{call.at_home_confirmation}</td>
                 <td>{call.treatment_change}</td>
                 <td>{call.change_details}</td>
                 <td>{call.notes}</td>
+                <td>{call.delivery_instructions}</td>
               </tr>
             ))
           )}

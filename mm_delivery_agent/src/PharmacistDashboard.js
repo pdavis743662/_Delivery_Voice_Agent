@@ -8,6 +8,7 @@ function PharmacistDashboard() {
   const [drugDIN, setDrugDIN] = useState('');
   const [patientAddress, setPatientAddress] = useState('');
   const [scheduledDeliveryDate, setScheduledDeliveryDate] = useState('');
+  const [deliveryTimeFrame, setDeliveryTimeFrame] = useState('');  // NEW
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState('');
   const [callData, setCallData] = useState([]);
@@ -29,7 +30,8 @@ function PharmacistDashboard() {
             drug_name: drugName,
             drug_DIN: drugDIN,
             patient_address: patientAddress,
-            scheduled_date: scheduledDeliveryDate,
+            scheduled_delivery_date: scheduledDeliveryDate,
+            delivery_time_frame: deliveryTimeFrame,  // NEW
             notes: notes,
           }),
         }
@@ -44,6 +46,7 @@ function PharmacistDashboard() {
         setDrugDIN('');
         setPatientAddress('');
         setScheduledDeliveryDate('');
+        setDeliveryTimeFrame(''); // clear new field
         setNotes('');
         fetchCallData(); // refresh call history
       } else {
@@ -72,7 +75,7 @@ function PharmacistDashboard() {
   }, []);
 
   return (
-    <div className="PharmacistDashboard" style={{ padding: '2rem', maxWidth: '1000px', margin: 'auto' }}>
+    <div className="PharmacistDashboard" style={{ padding: '2rem', maxWidth: '1200px', margin: 'auto' }}>
       <h1>Pharmacist Dashboard</h1>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
@@ -147,6 +150,17 @@ function PharmacistDashboard() {
         </label>
 
         <label>
+          Delivery Time Frame:
+          <input
+            type="text"
+            value={deliveryTimeFrame}
+            onChange={(e) => setDeliveryTimeFrame(e.target.value)}
+            placeholder="e.g. 9AM - 12PM"
+            required
+          />
+        </label>
+
+        <label>
           Notes:
           <textarea
             value={notes}
@@ -172,7 +186,9 @@ function PharmacistDashboard() {
             <th>Drug DIN</th>
             <th>Patient Address</th>
             <th>Scheduled Delivery Date</th>
+            <th>Delivery Time Frame</th> {/* NEW */}
             <th>Confirmed Delivery Date</th>
+            <th>Confirmed Time Frame</th> {/* NEW */}
             <th>Call Status</th>
             <th>Call Transcript</th>
             <th>At Home Confirmation</th>
@@ -185,7 +201,7 @@ function PharmacistDashboard() {
         <tbody>
           {callData.length === 0 ? (
             <tr>
-              <td colSpan="17">No call data available.</td>
+              <td colSpan="19">No call data available.</td>
             </tr>
           ) : (
             callData.map((call, index) => (
@@ -199,7 +215,9 @@ function PharmacistDashboard() {
                 <td>{call.drug_DIN}</td>
                 <td>{call.patient_address}</td>
                 <td>{call.scheduled_delivery_date}</td>
+                <td>{call.delivery_time_frame}</td> {/* NEW */}
                 <td>{call.confirmed_delivery_date}</td>
+                <td>{call.confirmed_time_frame}</td> {/* NEW */}
                 <td>{call.call_status}</td>
                 <td>{call.call_transcript}</td>
                 <td>{call.at_home_confirmation}</td>

@@ -72,21 +72,27 @@ function PharmacistDashboard() {
         </label>
 
         <label>
-          Patient Name:
+          Patient Name (First and Last Name):
           <input
             type="text"
             value={patientName}
             onChange={(e) => setPatientName(e.target.value)}
+            placeholder="e.g. John Doe"
+            pattern="^[A-Za-z]+ [A-Za-z]+.*$"
+            title="Enter first and last name"
             required
           />
         </label>
 
         <label>
-          Phone Number:
+          Phone Number (10 digits, e.g. 6042299074):
           <input
             type="tel"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="e.g. 6042299074"
+            pattern="^[0-9]{10}$"
+            title="Enter exactly 10 digits, no spaces or dashes"
             required
           />
         </label>
@@ -102,11 +108,14 @@ function PharmacistDashboard() {
         </label>
 
         <label>
-          Drug DIN:
+          Drug DIN (8 digit number):
           <input
             type="text"
             value={drugDIN}
             onChange={(e) => setDrugDIN(e.target.value)}
+            placeholder="e.g. 12345678"
+            pattern="^[0-9]{8}$"
+            title="Enter exactly 8 digits"
             required
           />
         </label>
@@ -132,12 +141,14 @@ function PharmacistDashboard() {
         </label>
 
         <label>
-          Delivery Time Frame:
+          Delivery Time Frame (e.g. 9AM - 12PM):
           <input
             type="text"
             value={deliveryTimeFrame}
             onChange={(e) => setDeliveryTimeFrame(e.target.value)}
             placeholder="e.g. 9AM - 12PM"
+            pattern="^(1[0-2]|0?[1-9])(AM|PM) ?- ?(1[0-2]|0?[1-9])(AM|PM)$"
+            title="Enter time frame in format: 9AM - 12PM"
             required
           />
         </label>

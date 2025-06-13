@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 function PharmacistDashboard() {
   const [patientId, setPatientId] = useState('');
@@ -8,10 +8,9 @@ function PharmacistDashboard() {
   const [drugDIN, setDrugDIN] = useState('');
   const [patientAddress, setPatientAddress] = useState('');
   const [scheduledDeliveryDate, setScheduledDeliveryDate] = useState('');
-  const [deliveryTimeFrame, setDeliveryTimeFrame] = useState('');  // NEW
+  const [deliveryTimeFrame, setDeliveryTimeFrame] = useState('');
   const [notes, setNotes] = useState('');
   const [status, setStatus] = useState('');
-  const [callData, setCallData] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +30,7 @@ function PharmacistDashboard() {
             drug_DIN: drugDIN,
             patient_address: patientAddress,
             scheduled_delivery_date: scheduledDeliveryDate,
-            delivery_time_frame: deliveryTimeFrame,  // NEW
+            delivery_time_frame: deliveryTimeFrame,
             notes: notes,
           }),
         }
@@ -46,9 +45,8 @@ function PharmacistDashboard() {
         setDrugDIN('');
         setPatientAddress('');
         setScheduledDeliveryDate('');
-        setDeliveryTimeFrame(''); // clear new field
+        setDeliveryTimeFrame('');
         setNotes('');
-        fetchCallData(); // refresh call history
       } else {
         setStatus('Failed to send call.');
       }
@@ -57,22 +55,6 @@ function PharmacistDashboard() {
       setStatus('Error sending call.');
     }
   };
-
-  const fetchCallData = async () => {
-    try {
-      const response = await fetch(
-        'https://sheet.best/api/sheets/xxxxxxxxxxxxxxxxxxx' // Replace with your Google Sheet API URL
-      );
-      const data = await response.json();
-      setCallData(data);
-    } catch (error) {
-      console.error('Error fetching call data:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchCallData();
-  }, []);
 
   return (
     <div className="PharmacistDashboard" style={{ padding: '2rem', maxWidth: '1200px', margin: 'auto' }}>
@@ -173,63 +155,17 @@ function PharmacistDashboard() {
 
       {status && <p>Status: {status}</p>}
 
+      {/* ✅ IFRAME EMBED OF GOOGLE SHEET */}
       <h2>Call History</h2>
-      <table border="1" cellPadding="8" style={{ width: '100%', textAlign: 'left' }}>
-        <thead>
-          <tr>
-            <th>Time Stamp</th>
-            <th>Call ID</th>
-            <th>Patient ID</th>
-            <th>Patient Name</th>
-            <th>Phone Number</th>
-            <th>Drug Name</th>
-            <th>Drug DIN</th>
-            <th>Patient Address</th>
-            <th>Scheduled Delivery Date</th>
-            <th>Delivery Time Frame</th> {/* NEW */}
-            <th>Confirmed Delivery Date</th>
-            <th>Confirmed Time Frame</th> {/* NEW */}
-            <th>Call Status</th>
-            <th>Call Transcript</th>
-            <th>At Home Confirmation</th>
-            <th>Treatment Change</th>
-            <th>Change Details</th>
-            <th>Notes</th>
-            <th>Delivery Instructions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {callData.length === 0 ? (
-            <tr>
-              <td colSpan="19">No call data available.</td>
-            </tr>
-          ) : (
-            callData.map((call, index) => (
-              <tr key={index}>
-                <td>{call.time_stamp}</td>
-                <td>{call.call_id}</td>
-                <td>{call.patient_id}</td>
-                <td>{call.patient_name}</td>
-                <td>{call.phone_number}</td>
-                <td>{call.drug_name}</td>
-                <td>{call.drug_DIN}</td>
-                <td>{call.patient_address}</td>
-                <td>{call.scheduled_delivery_date}</td>
-                <td>{call.delivery_time_frame}</td> {/* NEW */}
-                <td>{call.confirmed_delivery_date}</td>
-                <td>{call.confirmed_time_frame}</td> {/* NEW */}
-                <td>{call.call_status}</td>
-                <td>{call.call_transcript}</td>
-                <td>{call.at_home_confirmation}</td>
-                <td>{call.treatment_change}</td>
-                <td>{call.change_details}</td>
-                <td>{call.notes}</td>
-                <td>{call.delivery_instructions}</td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      <div style={{ width: '100%', minHeight: '700px', overflow: 'hidden', border: '1px solid #ccc', borderRadius: '8px' }}>
+      <iframe 
+      title="Call Data Sheet"
+      src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQa0G6LQhWxlLvNF-YafnDn--uNIrJdJWPqoz7CaeAHj_4CScgA_8-TPR5fYkMHOuSN3dm8XDgVWhgs/pubhtml?widget=true&amp;headers=false" 
+      width="100%"
+      height="1000"
+      style={{ border: 'none' }}>
+      </iframe>
+      </div>
     </div>
   );
 }
